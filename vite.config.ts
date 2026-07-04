@@ -7,9 +7,7 @@ import { resolve } from "node:path";
 /**
  * Build-only plugin that:
  * 1. Strips mock feed import from main.ts so it'"'"'s excluded from the production bundle
- * 2. Escapes {field_token} placeholders in CSS so PostCSS doesn'"'"'t choke
- * 3. Restores tokens in the final CSS bundle and renames it to widget.css
- * 4. Strips index.html to body-only content and renames it to widget.html
+ * 2. Strips index.html to body-only content and renames it to widget.html
  */
 function buildWidgetPlugin(): Plugin {
   let isBuild = false;
@@ -22,37 +20,20 @@ function buildWidgetPlugin(): Plugin {
       isBuild = resolvedConfig.command === "build";
     },
 
+    /**
+     * Strip mock feed import and DEV guard from the production bundle.
+     * Token escaping/restoration is handled by streamlabsTokens plugin.
+     */
     transform(code, id) {
       if (!isBuild) return null;
 
-      // Strip mock feed import and DEV guard from the production bundle
       if (id.endsWith("main.ts")) {
         code = code.replace(/import \{ startMockFeed \} from "\.\/mock-feed";\n/, "");
         code = code.replace(/void \(import\.meta\.env\.DEV && startMockFeed\(\)\);/, "");
         return { code, map: null };
       }
 
-      // Escape CSS field tokens for PostCSS
-      if (id.endsWith(".css")) {
-        let result = code;
-        result = result.replace(/\{(\w+)\}/g, (_, token) => `__TOKEN_${token}__`);
-        return { code: result, map: null };
-      }
-
       return null;
-    },
-
-    generateBundle(_, bundle) {
-      for (const [, chunk] of Object.entries(bundle)) {
-        // Handle CSS: restore tokens and rename
-        if (chunk.type === "asset" && chunk.fileName.endsWith(".css")) {
-          chunk.source = (chunk.source as string).replace(
-            /__TOKEN_(\w+)__/g,
-            (_m, token) => `{${token}}`,
-          );
-          chunk.fileName = "widget.css";
-        }
-      }
     },
 
     closeBundle() {
