@@ -32,7 +32,12 @@ const SENDERS: MockSender[] = [
     color: "#DAA520",
     badges: ["broadcaster"],
   },
-  { name: "fossabot", displayName: "Fossabot", color: "#FF6347", badges: ["subscriber", "bits"] },
+  {
+    name: "fossabot",
+    displayName: "Fossabot",
+    color: "#FF6347",
+    badges: ["subscriber", "subGifter", "bits"],
+  },
   {
     name: "knight_owl",
     displayName: "Knight_Owl",
