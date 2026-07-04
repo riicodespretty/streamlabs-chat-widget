@@ -51,10 +51,9 @@ export function streamlabsTokens(): Plugin {
       isDev = resolvedConfig.command === "serve";
       isBuild = resolvedConfig.command === "build";
       try {
-        const activeProfile = readFileSync(
-          resolve(resolvedConfig.root, "profiles", ".active"),
-          "utf-8",
-        ).trim();
+        const activeProfile =
+          process.env.PROFILE ||
+          readFileSync(resolve(resolvedConfig.root, "profiles", ".active"), "utf-8").trim();
         const configPath = resolve(
           resolvedConfig.root,
           "profiles",
