@@ -3,11 +3,19 @@
  * Tree-shaken from production builds (imported only in dev mode).
  */
 
+import type { BadgeKey, BadgeTags } from "./badges";
+
 interface MockSender {
   name: string;
   displayName: string;
   color: string;
-  badges: string[];
+  badges: BadgeKey[];
+}
+
+function tagsFromBadges(badges: BadgeKey[]): BadgeTags {
+  const tags: Record<string, string> = {};
+  for (const b of badges) tags[b] = "1";
+  return tags as BadgeTags;
 }
 
 const SENDERS: MockSender[] = [
@@ -74,13 +82,7 @@ function dispatchMessage(user: MockSender, body: string): void {
         tags: {
           "display-name": user.displayName,
           color: user.color,
-          broadcaster: user.badges.includes("broadcaster") ? "1" : "0",
-          moderator: user.badges.includes("moderator") ? "1" : "0",
-          subscriber: user.badges.includes("subscriber") ? "1" : "0",
-          vip: user.badges.includes("vip") ? "1" : "0",
-          turbo: user.badges.includes("turbo") ? "1" : "0",
-          premium: user.badges.includes("premium") ? "1" : "0",
-          bits: user.badges.includes("bits") ? "1" : "0",
+          ...tagsFromBadges(user.badges),
         },
         messageId: crypto.randomUUID(),
       },

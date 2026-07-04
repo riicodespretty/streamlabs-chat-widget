@@ -86,4 +86,22 @@ describe("onEventReceived — chat message rendering", () => {
     expect(badgesEl.innerHTML).not.toContain("subscriber-icon");
     expect(badgesEl.innerHTML).not.toContain("vip-icon");
   });
+
+  it("does not render when event type is not chatmessage", async () => {
+    await import("../main");
+
+    const event = new CustomEvent("onEventReceived", {
+      detail: {
+        type: "follow",
+        name: "NewFollower",
+        from: "newfollower",
+        isTest: true,
+      },
+    });
+
+    window.dispatchEvent(event);
+
+    const log = document.getElementById("log")!;
+    expect(log.querySelectorAll("[data-from]").length).toBe(0);
+  });
 });

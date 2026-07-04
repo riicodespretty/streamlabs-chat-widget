@@ -1,20 +1,14 @@
 import { renderBadges } from "./badges";
+import type { BadgeTags } from "./badges";
 
 export interface ChatMessageEvent {
   type: "chatmessage";
   command: "PRIVMSG";
   from: string;
   body: string;
-  tags: {
+  tags: BadgeTags & {
     "display-name"?: string;
     color?: string;
-    broadcaster?: string;
-    moderator?: string;
-    subscriber?: string;
-    vip?: string;
-    turbo?: string;
-    premium?: string;
-    bits?: string;
   };
   messageId: string;
 }

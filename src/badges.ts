@@ -9,8 +9,10 @@ export interface BadgeTags {
   bits?: string;
 }
 
+export type BadgeKey = keyof BadgeTags;
+
 export interface BadgeDef {
-  key: keyof BadgeTags;
+  key: BadgeKey;
   src: string;
   type: string;
   title: string;
@@ -18,7 +20,7 @@ export interface BadgeDef {
 
 // Public CDN badge images matching the baseline #badge_item template.
 // Extracted from Streamlabs Chat Box widget preview — scale /1 (18×18px).
-export const BADGE_MAP: BadgeDef[] = [
+export const BADGE_DEFS: BadgeDef[] = [
   {
     key: "broadcaster",
     src: "https://static-cdn.jtvnw.net/badges/v1/5527c58c-fb7d-422d-b71b-f309dcb85cc1/1",
@@ -52,8 +54,8 @@ export const BADGE_MAP: BadgeDef[] = [
   {
     key: "premium",
     src: "https://static-cdn.jtvnw.net/badges/v1/bbbe0db0-a598-423e-86d0-f9fb98ca1933/1",
-    type: "premium",
     title: "Prime",
+    type: "premium",
   },
   {
     key: "bits",
@@ -63,8 +65,17 @@ export const BADGE_MAP: BadgeDef[] = [
   },
 ];
 
+/** Lookup map for badge type → BadgeDef, keyed by the badge tag key. */
+const BADGE_BY_KEY: Record<string, BadgeDef> = Object.fromEntries(
+  BADGE_DEFS.map((b) => [b.key, b]),
+);
+
 export function renderBadges(tags: BadgeTags): string {
-  return BADGE_MAP.filter((b) => tags[b.key] === "1")
-    .map((b) => `<img src="${b.src}" class="badge ${b.type}-icon" title="${b.title}" />`)
+  return (Object.keys(tags) as BadgeKey[])
+    .filter((key) => tags[key] === "1" && BADGE_BY_KEY[key])
+    .map((key) => {
+      const b = BADGE_BY_KEY[key];
+      return `<img src="${b.src}" class="badge ${b.type}-icon" title="${b.title}" />`;
+    })
     .join("");
 }

@@ -2,7 +2,7 @@ import type { Plugin } from "vite";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-interface WidgetConfig {
+interface FieldSettings {
   background_color: string;
   font_size: string;
   text_color: string;
@@ -30,17 +30,16 @@ function restoreTokens(code: string): string {
 }
 
 /** Replace {token} with defaults from widget.config.json (dev mode only). */
-function replaceTokens(code: string, config: WidgetConfig): string {
+export function replaceTokens(code: string, config: FieldSettings): string {
   let result = code;
-  result = result.replace(/\{background_color\}/g, config.background_color);
-  result = result.replace(/\{font_size\}/g, config.font_size);
-  result = result.replace(/\{text_color\}/g, config.text_color);
-  result = result.replace(/\{message_hide_delay\}/g, config.message_hide_delay);
+  for (const token of FIELD_TOKENS) {
+    result = result.replace(new RegExp(`\\{${token}\\}`, "g"), config[token]);
+  }
   return result;
 }
 
 export function streamlabsTokens(): Plugin {
-  let config: WidgetConfig | null = null;
+  let config: FieldSettings | null = null;
   let isDev = false;
   let isBuild = false;
 
@@ -54,7 +53,7 @@ export function streamlabsTokens(): Plugin {
       try {
         const configPath = resolve(resolvedConfig.root, "widget.config.json");
         const raw = readFileSync(configPath, "utf-8");
-        config = JSON.parse(raw) as WidgetConfig;
+        config = JSON.parse(raw) as FieldSettings;
       } catch {
         config = null;
       }
