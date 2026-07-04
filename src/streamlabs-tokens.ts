@@ -12,11 +12,14 @@ interface WidgetConfig {
 export function streamlabsTokens(): Plugin {
   let config: WidgetConfig | null = null;
 
+  let isDev = false;
+
   return {
     name: "streamlabs-tokens",
     enforce: "pre",
 
     configResolved(resolvedConfig) {
+      isDev = resolvedConfig.command === "serve";
       try {
         const configPath = resolve(resolvedConfig.root, "widget.config.json");
         const raw = readFileSync(configPath, "utf-8");
@@ -27,7 +30,7 @@ export function streamlabsTokens(): Plugin {
     },
 
     transform(code, id) {
-      if (!config) return null;
+      if (!isDev || !config) return null;
 
       if (!id.endsWith(".html") && !id.endsWith(".css")) return null;
 

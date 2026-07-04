@@ -32,5 +32,5 @@ window.addEventListener("onEventReceived", ((event: CustomEvent) => {
 
 // Conditionally import the mock feed in dev mode
 if (import.meta.env.DEV) {
-  void import("./mock-feed");
+  void import("./mock-feed").then((m) => m.startMockFeed());
 }
