@@ -1,103 +1,108 @@
 @import url('https://fonts.googleapis.com/css2?family=Mali&display=swap');
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
 }
 
 body {
-  background: {background_color};
-  font-family: 'Mali', sans-serif;
-  font-size: {font_size};
-  color: {text_color};
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
+    background: {background_color};
+    font-family: 'Mali';
+    font-weight: 700;
+    font-size: {font_size};
+    line-height: 1.5em;
+    color: {text_color};
+}
+
+#log>div {
+    animation: fadeInRight .4s ease forwards, fadeOut 0.5s ease {message_hide_delay} forwards;
+    -webkit-animation: fadeInRight .4s ease forwards, fadeOut 0.5s ease {message_hide_delay} forwards;
+}
+
+.colon {
+    display: none;
 }
 
 #log {
-  display: table;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  padding: 0;
-  width: 100%;
-  table-layout: fixed;
+    display: table;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 0 10px 10px;
+    width: 100%;
+    table-layout: fixed;
 }
 
-#log > div {
-  display: table-row;
+#log>div {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.4em;
 }
 
-.sl__chat__message {
-  display: table-cell;
-  padding: 4px 8px;
-  vertical-align: middle;
-  opacity: 0;
-  animation: fadeInRight 0.3s ease forwards, fadeOut 0.5s ease {message_hide_delay} forwards;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+#log>div.deleted {
+    visibility: hidden;
 }
 
-.sl__chat__meta {
-  display: block;
-  font-size: 0.85em;
-  opacity: 0.8;
-  line-height: 1.2;
+#log .emote {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    padding: 0.4em 0.2em;
+    position: relative;
 }
 
-.sl__chat__badges {
-  display: inline;
-  margin-right: 4px;
+#log .emote img {
+    display: inline-block;
+    height: 1em;
+    opacity: 0;
 }
 
-.sl__chat__badges img {
-  height: 1.2em;
-  width: auto;
-  vertical-align: middle;
-  margin-right: 2px;
+#log .message,#log .meta {
+    vertical-align: top;
+    display: table-cell;
+    padding-bottom: 0.1em;
 }
 
-.sl__chat__from {
-  display: inline;
-  font-weight: 700;
+#log .meta {
+    width: 100%;
+    text-align: left;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
-.sl__chat__from::after {
-  content: ':';
+#log .message {
+    word-wrap: break-word;
+    width: 100%;
+    padding-left: 0.4em;
 }
 
-.sl__chat__body {
-  display: block;
-  line-height: 1.4;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
+.badge {
+    display: inline-block;
+    margin-right: 0.2em;
+    position: relative;
+    height: 1em;
+    vertical-align: middle;
+    top: -0.1em;
 }
 
-.sl__chat__body img.emote {
-  height: 1.4em;
-  width: auto;
-  vertical-align: middle;
-  margin: 0 1px;
+.name {
+    margin-left: 0.2em;
 }
 
 @keyframes fadeInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes fadeOut {
-  from {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(-30px); }
 }

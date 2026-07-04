@@ -6,6 +6,7 @@
       "name": "streamlabs-chat-widget",
       "devDependencies": {
         "@vitest/coverage-v8": "^4.1.9",
+        "chrome-devtools-mcp": "^1.4.0",
         "happy-dom": "^20.10.6",
         "typescript": "~6.0.2",
         "vite": "npm:@voidzero-dev/vite-plus-core@0.2.2",
@@ -207,6 +208,8 @@
     "buffer-image-size": ["buffer-image-size@0.6.4", "", { "dependencies": { "@types/node": "*" } }, "sha512-nEh+kZOPY1w+gcCMobZ6ETUp9WfibndnosbpwB1iJk/8Gt5ZF2bhS6+B6bPYz424KtwsR6Rflc3tCz1/ghX2dQ=="],
 
     "chai": ["chai@6.2.2", "", {}, "sha512-NUPRluOfOiTKBKvWPtSD4PhFvWCqOi0BGStNWs57X9js7XGTprSmFoz5F0tWhR4WPjNeR9jXqdC7/UpSJTnlRg=="],
+
+    "chrome-devtools-mcp": ["chrome-devtools-mcp@1.4.0", "", { "bin": { "chrome-devtools": "build/src/bin/chrome-devtools.js", "chrome-devtools-mcp": "build/src/bin/chrome-devtools-mcp.js" } }, "sha512-OOT5mYMUbqqgpIGx0s0TgxnlicRSDm3yhZWzK3pWkB6TUPb+WdpI0j6OQoTnNZ9mqn9rwXiCOLzY4UALp+XsiQ=="],
 
     "convert-source-map": ["convert-source-map@2.0.0", "", {}, "sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg=="],
 

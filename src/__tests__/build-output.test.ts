@@ -18,7 +18,7 @@ describe("build output", () => {
     expect(existsSync(resolve(distDir, "widget.js"))).toBe(true);
   });
 
-  it("widget.html contains #log and #chatlist_item template with {from}, {color}, {message}, {messageId}, {badges} tokens intact", () => {
+  it("widget.html contains #log, #chatlist_item template with {from}, {color}, {message}, {messageId}, and #badge_item template", () => {
     const html = readFileSync(resolve(distDir, "widget.html"), "utf-8");
     expect(html).toContain('id="log"');
     expect(html).toContain('id="chatlist_item"');
@@ -26,7 +26,7 @@ describe("build output", () => {
     expect(html).toContain("{color}");
     expect(html).toContain("{message}");
     expect(html).toContain("{messageId}");
-    expect(html).toContain("{badges}");
+    expect(html).toContain('id="badge_item"');
   });
 
   it('widget.html does not contain <html>, <head>, or <script type="module" tags', () => {

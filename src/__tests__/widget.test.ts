@@ -3,16 +3,17 @@ import { describe, it, expect, beforeEach, vi } from "vite-plus/test";
 // Set up the widget HTML skeleton before each test
 
 vi.mock("../mock-feed", () => ({ startMockFeed: vi.fn() }));
+
 beforeEach(() => {
   document.body.innerHTML = `
     <div id="log" class="sl__chat__layout"></div>
     <script type="text/template" id="chatlist_item">
-      <div class="sl__chat__message" style="color:{color}" data-message-id="{messageId}">
-        <span class="sl__chat__meta">
-          <span class="sl__chat__badges">{badges}</span>
-          <span class="sl__chat__from">{from}</span>
+      <div data-from="{from}" data-id="{messageId}">
+        <span class="meta" style="color: {color}">
+          <span class="badges"></span>
+          <span class="name">{from}</span>
         </span>
-        <span class="sl__chat__body">{message}</span>
+        <span class="message">{message}</span>
       </div>
     </script>
   `;
@@ -41,19 +42,19 @@ describe("onEventReceived — chat message rendering", () => {
     window.dispatchEvent(event);
 
     const log = document.getElementById("log")!;
-    const messageDiv = log.querySelector<HTMLDivElement>(".sl__chat__message")!;
+    const messageDiv = log.querySelector<HTMLDivElement>("[data-from]")!;
     expect(messageDiv).not.toBeNull();
 
-    const fromEl = messageDiv.querySelector<HTMLSpanElement>(".sl__chat__from")!;
+    const fromEl = messageDiv.querySelector<HTMLSpanElement>(".name")!;
     expect(fromEl).not.toBeNull();
     expect(fromEl.textContent).toBe("TestUser");
 
-    const bodyEl = messageDiv.querySelector<HTMLSpanElement>(".sl__chat__body")!;
+    const bodyEl = messageDiv.querySelector<HTMLSpanElement>(".message")!;
     expect(bodyEl).not.toBeNull();
     expect(bodyEl.textContent).toBe("Hello, stream!");
 
-    expect(messageDiv.getAttribute("data-message-id")).toBe("msg-001");
-    expect(messageDiv.style.color).toBe("#FF0000");
+    expect(messageDiv.getAttribute("data-id")).toBe("msg-001");
+    expect(messageDiv.querySelector(".meta")!.getAttribute("style")).toContain("color: #FF0000");
   });
 
   it("renders badge spans when tags include role flags set to '1'", async () => {
@@ -80,7 +81,7 @@ describe("onEventReceived — chat message rendering", () => {
     window.dispatchEvent(event);
 
     const log = document.getElementById("log")!;
-    const badgesEl = log.querySelector<HTMLSpanElement>(".sl__chat__badges")!;
+    const badgesEl = log.querySelector("[data-from]")!.querySelector<HTMLSpanElement>(".badges")!;
     expect(badgesEl).not.toBeNull();
     expect(badgesEl.innerHTML).toContain("badge--mod");
     expect(badgesEl.textContent).toContain("MOD");
