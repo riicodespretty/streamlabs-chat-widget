@@ -1,6 +1,8 @@
-import { describe, it, expect, beforeEach } from "vite-plus/test";
+import { describe, it, expect, beforeEach, vi } from "vite-plus/test";
 
 // Set up the widget HTML skeleton before each test
+
+vi.mock("../mock-feed", () => ({ startMockFeed: vi.fn() }));
 beforeEach(() => {
   document.body.innerHTML = `
     <div id="log" class="sl__chat__layout"></div>

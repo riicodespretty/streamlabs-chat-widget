@@ -6,9 +6,10 @@ import { resolve } from "node:path";
 
 /**
  * Build-only plugin that:
- * 1. Escapes {field_token} placeholders in CSS so PostCSS doesn't choke
- * 2. Restores tokens in the final CSS bundle and renames it to widget.css
- * 3. Strips index.html to body-only content and renames it to widget.html
+ * 1. Strips mock feed import from main.ts so it'"'"'s excluded from the production bundle
+ * 2. Escapes {field_token} placeholders in CSS so PostCSS doesn'"'"'t choke
+ * 3. Restores tokens in the final CSS bundle and renames it to widget.css
+ * 4. Strips index.html to body-only content and renames it to widget.html
  */
 function buildWidgetPlugin(): Plugin {
   let isBuild = false;
@@ -22,10 +23,23 @@ function buildWidgetPlugin(): Plugin {
     },
 
     transform(code, id) {
-      if (!isBuild || !id.endsWith(".css")) return null;
-      let result = code;
-      result = result.replace(/\{(\w+)\}/g, (_, token) => `__TOKEN_${token}__`);
-      return { code: result, map: null };
+      if (!isBuild) return null;
+
+      // Strip mock feed import and DEV guard from the production bundle
+      if (id.endsWith("main.ts")) {
+        code = code.replace(/import \{ startMockFeed \} from "\.\/mock-feed";\n/, "");
+        code = code.replace(/void \(import\.meta\.env\.DEV && startMockFeed\(\)\);/, "");
+        return { code, map: null };
+      }
+
+      // Escape CSS field tokens for PostCSS
+      if (id.endsWith(".css")) {
+        let result = code;
+        result = result.replace(/\{(\w+)\}/g, (_, token) => `__TOKEN_${token}__`);
+        return { code: result, map: null };
+      }
+
+      return null;
     },
 
     generateBundle(_, bundle) {
@@ -64,9 +78,6 @@ function buildWidgetPlugin(): Plugin {
 
 export default defineConfig({
   plugins: [buildWidgetPlugin(), streamlabsTokens() as Plugin],
-  define: {
-    "import.meta.env.DEV": "false",
-  },
   build: {
     outDir: "dist",
     rollupOptions: {

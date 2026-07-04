@@ -68,7 +68,7 @@ window.addEventListener("onEventReceived", ((event: CustomEvent) => {
   }
 }) as EventListener);
 
-// Conditionally import the mock feed in dev mode
-if (import.meta.env.DEV) {
-  void import("./mock-feed").then((m) => m.startMockFeed());
-}
+import { startMockFeed } from "./mock-feed";
+
+// Mock feed only runs in dev — stripped by the build plugin for production
+void (import.meta.env.DEV && startMockFeed());
