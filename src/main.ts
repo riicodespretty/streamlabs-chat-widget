@@ -17,18 +17,36 @@ interface ChatMessageEvent {
 
 interface BadgeDef {
   key: keyof ChatMessageEvent["tags"];
-  label: string;
+  src: string;
+  type: string;
+  title: string;
 }
 
+// Public CDN badge images matching the baseline #badge_item template format
 const BADGE_MAP: BadgeDef[] = [
-  { key: "mod", label: "MOD" },
-  { key: "subscriber", label: "SUB" },
-  { key: "vip", label: "VIP" },
+  {
+    key: "mod",
+    src: "https://static-cdn.jtvnw.net/badges/v1/3267646d-33f0-4b17-b3df-f923a41db1d0/3",
+    type: "mod",
+    title: "Moderator",
+  },
+  {
+    key: "subscriber",
+    src: "https://static-cdn.jtvnw.net/badges/v1/5d9f2208-5dd8-11e9-8bf2-0eb25a108717/3",
+    type: "subscriber",
+    title: "Subscriber",
+  },
+  {
+    key: "vip",
+    src: "https://static-cdn.jtvnw.net/badges/v1/b817aba4-fad8-49e2-b88a-7cc744dfa6ec/3",
+    type: "vip",
+    title: "VIP",
+  },
 ];
 
 function renderBadges(tags: ChatMessageEvent["tags"]): string {
   return BADGE_MAP.filter((b) => tags[b.key] === "1")
-    .map((b) => `<span class="badge badge--${b.key}">${b.label}</span>`)
+    .map((b) => `<img src="${b.src}" class="badge ${b.type}-icon" title="${b.title}" />`)
     .join("");
 }
 

@@ -57,7 +57,7 @@ describe("onEventReceived — chat message rendering", () => {
     expect(messageDiv.querySelector(".meta")!.getAttribute("style")).toContain("color: #FF0000");
   });
 
-  it("renders badge spans when tags include role flags set to '1'", async () => {
+  it("renders badge images when tags include role flags set to '1'", async () => {
     // Re-import to get a fresh module with the listener registered
     await import("../main");
 
@@ -83,9 +83,9 @@ describe("onEventReceived — chat message rendering", () => {
     const log = document.getElementById("log")!;
     const badgesEl = log.querySelector("[data-from]")!.querySelector<HTMLSpanElement>(".badges")!;
     expect(badgesEl).not.toBeNull();
-    expect(badgesEl.innerHTML).toContain("badge--mod");
-    expect(badgesEl.textContent).toContain("MOD");
-    expect(badgesEl.textContent).not.toContain("SUB");
-    expect(badgesEl.textContent).not.toContain("VIP");
+    expect(badgesEl.innerHTML).toContain("mod-icon");
+    expect(badgesEl.innerHTML).toContain("static-cdn.jtvnw.net");
+    expect(badgesEl.innerHTML).not.toContain("subscriber-icon");
+    expect(badgesEl.innerHTML).not.toContain("vip-icon");
   });
 });
