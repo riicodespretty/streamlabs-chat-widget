@@ -53,4 +53,36 @@ describe("onEventReceived — chat message rendering", () => {
     expect(messageDiv.getAttribute("data-message-id")).toBe("msg-001");
     expect(messageDiv.style.color).toBe("#FF0000");
   });
+
+  it("renders badge spans when tags include role flags set to '1'", async () => {
+    // Re-import to get a fresh module with the listener registered
+    await import("../main");
+
+    const event = new CustomEvent("onEventReceived", {
+      detail: {
+        type: "chatmessage",
+        command: "PRIVMSG",
+        from: "moduser",
+        body: "mod chat",
+        tags: {
+          "display-name": "ModUser",
+          color: "#00FF00",
+          mod: "1",
+          subscriber: "0",
+          vip: "0",
+        },
+        messageId: "msg-002",
+      },
+    });
+
+    window.dispatchEvent(event);
+
+    const log = document.getElementById("log")!;
+    const badgesEl = log.querySelector<HTMLSpanElement>(".sl__chat__badges")!;
+    expect(badgesEl).not.toBeNull();
+    expect(badgesEl.innerHTML).toContain("badge--mod");
+    expect(badgesEl.textContent).toContain("MOD");
+    expect(badgesEl.textContent).not.toContain("SUB");
+    expect(badgesEl.textContent).not.toContain("VIP");
+  });
 });
