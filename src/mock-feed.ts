@@ -12,9 +12,8 @@ interface MockSender {
   color: string;
 }
 
-/** Pick a random subset of the available badge types for a message. */
 function randomBadges(): BadgeTags {
-  const count = Math.floor(Math.random() * 5); // 0–4 badges per message
+  const count = Math.floor(Math.random() * 3); // 0–2 badges per message
   const pool = [...BADGE_DEFS];
   const tags: Record<string, string> = {};
 
