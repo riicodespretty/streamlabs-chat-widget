@@ -4,6 +4,29 @@ import { streamlabsTokens } from "./src/streamlabs-tokens";
 import { readFileSync, writeFileSync, unlinkSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 
+// Read active profile from profiles/.active
+const activeProfile = readFileSync(
+  resolve(import.meta.dirname!, "profiles", ".active"),
+  "utf-8",
+).trim();
+const profileDir = resolve(import.meta.dirname!, "profiles", activeProfile);
+
+/**
+ * Resolve `./style.css` from main.ts to the active profile'"'"'s style.css.
+ */
+function profileCssResolver(): Plugin {
+  return {
+    name: "profile-css-resolver",
+    enforce: "pre",
+    resolveId(source, importer) {
+      if (source === "./style.css" && importer) {
+        return resolve(profileDir, "style.css");
+      }
+      return null;
+    },
+  };
+}
+
 /**
  * Build-only plugin that:
  * 1. Strips mock feed import from main.ts so it'"'"'s excluded from the production bundle
@@ -38,7 +61,7 @@ function buildWidgetPlugin(): Plugin {
 
     closeBundle() {
       const dist = resolve(process.cwd(), "dist");
-      const indexPath = resolve(dist, "index.html");
+      const indexPath = resolve(dist, "profiles", activeProfile, "index.html");
       if (!existsSync(indexPath)) return;
 
       let html = readFileSync(indexPath, "utf-8");
@@ -58,10 +81,11 @@ function buildWidgetPlugin(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [buildWidgetPlugin(), streamlabsTokens() as Plugin],
+  plugins: [profileCssResolver(), buildWidgetPlugin(), streamlabsTokens() as Plugin],
   build: {
     outDir: "dist",
     rollupOptions: {
+      input: { index: resolve(profileDir, "index.html") },
       output: {
         entryFileNames: "widget.js",
         assetFileNames: "assets/[name].[ext]",
@@ -72,7 +96,7 @@ export default defineConfig({
     "*": "vp check --fix",
   },
   fmt: {
-    ignorePatterns: ["src/style.css"],
+    ignorePatterns: ["profiles/*/style.css"],
   },
   lint: {
     jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],

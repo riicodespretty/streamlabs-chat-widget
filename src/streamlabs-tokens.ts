@@ -51,7 +51,16 @@ export function streamlabsTokens(): Plugin {
       isDev = resolvedConfig.command === "serve";
       isBuild = resolvedConfig.command === "build";
       try {
-        const configPath = resolve(resolvedConfig.root, "widget.config.json");
+        const activeProfile = readFileSync(
+          resolve(resolvedConfig.root, "profiles", ".active"),
+          "utf-8",
+        ).trim();
+        const configPath = resolve(
+          resolvedConfig.root,
+          "profiles",
+          activeProfile,
+          "widget.config.json",
+        );
         const raw = readFileSync(configPath, "utf-8");
         config = JSON.parse(raw) as FieldSettings;
       } catch {
