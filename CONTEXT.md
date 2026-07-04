@@ -8,6 +8,10 @@ A browser-based overlay widget that renders live viewer messages on top of a str
 The built-in Streamlabs widget that displays viewer messages on stream. Uses a custom HTML/CSS/JS template — Streamlabs' template engine clones the `#chatlist_item` snippet, replaces `{token}` placeholders, and handles the message lifecycle (animation, cleanup).
 _Avoid_: chat widget, chat overlay, Custom Widget (a different Streamlabs widget type with no built-in rendering)
 
+**Baseline**:
+The Streamlabs default Chat Box template structure that custom HTML/CSS/JS extends. Defines the DOM class names (`.meta`, `.name`, `.message`, `.badges`), the `#chatlist_item` and `#badge_item` snippets, and the `{type}-icon` badge class convention. Custom CSS targets these classes; custom HTML replaces the snippets.
+_Avoid_: default template, stock widget
+
 **Template Token**:
 A `{placeholder}` string in HTML or CSS that Streamlabs replaces at runtime. Message tokens (`{from}`, `{color}`, `{message}`, `{messageId}`) are replaced per-message by the built-in template engine. Field tokens (`{background_color}`, `{font_size}`, `{text_color}`, `{message_hide_delay}`) are replaced with the streamer's configured values.
 _Avoid_: placeholder, variable, slot
@@ -25,7 +29,7 @@ The viewer who authored a message. Identified by a platform username and an assi
 _Avoid_: user, from, chatter, username
 
 **Badge**:
-A role indicator icon displayed alongside the sender's name — e.g. moderator, subscriber, VIP, broadcaster.
+A role indicator icon rendered next to the sender's name. Rendered via the `#badge_item` template as an `<img>` with CDN-hosted images, not part of the `#chatlist_item` snippet. Known types: `broadcaster`, `moderator`, `subscriber`, `vip`, `turbo`, `premium`, `bits`. CSS class convention: `badge {type}-icon`.
 _Avoid_: role icon, flair, tag
 
 **Emote**:
