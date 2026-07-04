@@ -3,54 +3,38 @@
  * Tree-shaken from production builds (imported only in dev mode).
  */
 
-import type { BadgeKey, BadgeTags } from "./badges";
+import type { BadgeTags } from "./badges";
+import { BADGE_DEFS } from "./badges";
 
 interface MockSender {
   name: string;
   displayName: string;
   color: string;
-  badges: BadgeKey[];
 }
 
-function tagsFromBadges(badges: BadgeKey[]): BadgeTags {
+/** Pick a random subset of the available badge types for a message. */
+function randomBadges(): BadgeTags {
+  const count = Math.floor(Math.random() * 5); // 0–4 badges per message
+  const pool = [...BADGE_DEFS];
   const tags: Record<string, string> = {};
-  for (const b of badges) tags[b] = "1";
+
+  for (let i = 0; i < count && pool.length > 0; i++) {
+    const idx = Math.floor(Math.random() * pool.length);
+    tags[pool[idx].key] = "1";
+    pool.splice(idx, 1);
+  }
+
   return tags as BadgeTags;
 }
 
 const SENDERS: MockSender[] = [
-  { name: "nightbot", displayName: "Nightbot", color: "#2E8B57", badges: ["moderator"] },
-  {
-    name: "streamelements",
-    displayName: "StreamElements",
-    color: "#8A2BE2",
-    badges: ["vip", "turbo"],
-  },
-  {
-    name: "pokemoncommunitygame",
-    displayName: "PokemonCommunityGame",
-    color: "#DAA520",
-    badges: ["broadcaster"],
-  },
-  {
-    name: "fossabot",
-    displayName: "Fossabot",
-    color: "#FF6347",
-    badges: ["subscriber", "subGifter", "bits"],
-  },
-  {
-    name: "knight_owl",
-    displayName: "Knight_Owl",
-    color: "#1E90FF",
-    badges: ["moderator", "subscriber"],
-  },
-  {
-    name: "chatterbox42",
-    displayName: "Chatterbox42",
-    color: "#FF69B4",
-    badges: ["vip", "subscriber", "premium"],
-  },
-  { name: "lurker_pro", displayName: "Lurker_Pro", color: "#7FFF00", badges: [] },
+  { name: "nightbot", displayName: "Nightbot", color: "#2E8B57" },
+  { name: "streamelements", displayName: "StreamElements", color: "#8A2BE2" },
+  { name: "pokemoncommunitygame", displayName: "PokemonCommunityGame", color: "#DAA520" },
+  { name: "fossabot", displayName: "Fossabot", color: "#FF6347" },
+  { name: "knight_owl", displayName: "Knight_Owl", color: "#1E90FF" },
+  { name: "chatterbox42", displayName: "Chatterbox42", color: "#FF69B4" },
+  { name: "lurker_pro", displayName: "Lurker_Pro", color: "#7FFF00" },
 ];
 
 const MESSAGES: string[] = [
@@ -87,7 +71,7 @@ function dispatchMessage(user: MockSender, body: string): void {
         tags: {
           "display-name": user.displayName,
           color: user.color,
-          ...tagsFromBadges(user.badges),
+          ...randomBadges(),
         },
         messageId: crypto.randomUUID(),
       },
