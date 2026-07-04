@@ -29,7 +29,7 @@ The viewer who authored a message. Identified by a platform username and an assi
 _Avoid_: user, from, chatter, username
 
 **Badge**:
-A role indicator icon rendered next to the sender's name. Rendered via the `#badge_item` template as an `<img>` with CDN-hosted images, not part of the `#chatlist_item` snippet. Known types: `broadcaster`, `moderator`, `subscriber`, `vip`, `turbo`, `premium`, `bits`. CSS class convention: `badge {type}-icon`.
+A role indicator icon rendered next to the sender's name. Rendered via the `#badge_item` template as an `<img>` with CDN-hosted images, not part of the `#chatlist_item` snippet. Known types: `broadcaster`, `moderator`, `subscriber`, `vip`, `turbo`, `premium`, `bits`, `sub-gifter`. CSS class convention: `badge {type}-icon`.
 _Avoid_: role icon, flair, tag
 
 **Emote**:

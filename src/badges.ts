@@ -7,6 +7,7 @@ export interface BadgeTags {
   turbo?: string;
   premium?: string;
   bits?: string;
+  subGifter?: string;
 }
 
 export type BadgeKey = keyof BadgeTags;
@@ -62,6 +63,12 @@ export const BADGE_DEFS: BadgeDef[] = [
     src: "https://static-cdn.jtvnw.net/badges/v1/09d93036-e7ce-431c-9a9e-7044297133f2/1",
     type: "bits",
     title: "Bits",
+  },
+  {
+    key: "subGifter",
+    src: "https://static-cdn.jtvnw.net/badges/v1/a5ef6c17-2e5b-4d8f-9b80-2779fd722414/1",
+    type: "sub-gifter",
+    title: "Sub Gifter",
   },
 ];
 
