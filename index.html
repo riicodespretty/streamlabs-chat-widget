@@ -2,12 +2,20 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>streamlabs-chat-widget</title>
+    <title>Streamlabs Chat Box</title>
   </head>
   <body>
-    <div id="app"></div>
+    <div id="log" class="sl__chat__layout"></div>
+    <script type="text/template" id="chatlist_item">
+      <div class="sl__chat__message" style="color:{color}" data-message-id="{messageId}">
+        <span class="sl__chat__meta">
+          <span class="sl__chat__badges">{badges}</span>
+          <span class="sl__chat__from">{from}</span>
+        </span>
+        <span class="sl__chat__body">{message}</span>
+      </div>
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
