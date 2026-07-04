@@ -11,26 +11,31 @@ interface MockSender {
 }
 
 const SENDERS: MockSender[] = [
-  { name: "nightbot", displayName: "Nightbot", color: "#2E8B57", badges: ["mod"] },
-  { name: "streamelements", displayName: "StreamElements", color: "#8A2BE2", badges: ["vip"] },
+  { name: "nightbot", displayName: "Nightbot", color: "#2E8B57", badges: ["moderator"] },
+  {
+    name: "streamelements",
+    displayName: "StreamElements",
+    color: "#8A2BE2",
+    badges: ["vip", "turbo"],
+  },
   {
     name: "pokemoncommunitygame",
     displayName: "PokemonCommunityGame",
     color: "#DAA520",
-    badges: [],
+    badges: ["broadcaster"],
   },
-  { name: "fossabot", displayName: "Fossabot", color: "#FF6347", badges: ["subscriber"] },
+  { name: "fossabot", displayName: "Fossabot", color: "#FF6347", badges: ["subscriber", "bits"] },
   {
     name: "knight_owl",
     displayName: "Knight_Owl",
     color: "#1E90FF",
-    badges: ["mod", "subscriber"],
+    badges: ["moderator", "subscriber"],
   },
   {
     name: "chatterbox42",
     displayName: "Chatterbox42",
     color: "#FF69B4",
-    badges: ["vip", "subscriber"],
+    badges: ["vip", "subscriber", "premium"],
   },
   { name: "lurker_pro", displayName: "Lurker_Pro", color: "#7FFF00", badges: [] },
 ];
@@ -69,9 +74,13 @@ function dispatchMessage(user: MockSender, body: string): void {
         tags: {
           "display-name": user.displayName,
           color: user.color,
-          mod: user.badges.includes("mod") ? "1" : "0",
+          broadcaster: user.badges.includes("broadcaster") ? "1" : "0",
+          moderator: user.badges.includes("moderator") ? "1" : "0",
           subscriber: user.badges.includes("subscriber") ? "1" : "0",
           vip: user.badges.includes("vip") ? "1" : "0",
+          turbo: user.badges.includes("turbo") ? "1" : "0",
+          premium: user.badges.includes("premium") ? "1" : "0",
+          bits: user.badges.includes("bits") ? "1" : "0",
         },
         messageId: crypto.randomUUID(),
       },

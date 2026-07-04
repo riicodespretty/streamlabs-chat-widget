@@ -33,7 +33,6 @@ describe("onEventReceived — chat message rendering", () => {
         tags: {
           "display-name": "TestUser",
           color: "#FF0000",
-          mod: "0",
         },
         messageId: "msg-001",
       },
@@ -69,8 +68,7 @@ describe("onEventReceived — chat message rendering", () => {
         body: "mod chat",
         tags: {
           "display-name": "ModUser",
-          color: "#00FF00",
-          mod: "1",
+          moderator: "1",
           subscriber: "0",
           vip: "0",
         },
@@ -83,7 +81,7 @@ describe("onEventReceived — chat message rendering", () => {
     const log = document.getElementById("log")!;
     const badgesEl = log.querySelector("[data-from]")!.querySelector<HTMLSpanElement>(".badges")!;
     expect(badgesEl).not.toBeNull();
-    expect(badgesEl.innerHTML).toContain("mod-icon");
+    expect(badgesEl.innerHTML).toContain("moderator-icon");
     expect(badgesEl.innerHTML).toContain("static-cdn.jtvnw.net");
     expect(badgesEl.innerHTML).not.toContain("subscriber-icon");
     expect(badgesEl.innerHTML).not.toContain("vip-icon");
