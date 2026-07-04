@@ -32,7 +32,7 @@ const BADGE_MAP: BadgeDef[] = [
   },
   {
     key: "subscriber",
-    src: "https://static-cdn.jtvnw.net/badges/v1/5d9f2208-5dd8-11e9-8bf2-0eb25a108717/3",
+    src: "https://static-cdn.jtvnw.net/badges/v1/5d9f2208-5dd8-11e7-8513-2ff4adfae661/3",
     type: "subscriber",
     title: "Subscriber",
   },
