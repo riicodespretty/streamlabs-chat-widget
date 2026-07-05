@@ -20,6 +20,7 @@ export function profileHtmlPlugin(): Plugin {
       server.watcher.add(resolve(projectRoot, "profiles", ".active"));
       server.watcher.on("change", (path) => {
         if (path.endsWith("profiles/.active")) {
+          server.moduleGraph.invalidateAll();
           server.hot.send({ type: "full-reload" });
         }
       });

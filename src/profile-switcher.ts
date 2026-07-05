@@ -30,7 +30,9 @@ void (async () => {
   document.body.appendChild(panel);
 
   panel.addEventListener("click", async (e) => {
-    const btn = (e.target as HTMLElement).closest("button");
+    const btn = (
+      e.target instanceof Element ? e.target : (e.target as Node).parentElement
+    )?.closest("button");
     if (!btn) return;
     await fetch("/__profile", {
       method: "POST",
