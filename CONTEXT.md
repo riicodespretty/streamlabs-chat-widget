@@ -12,6 +12,10 @@ _Avoid_: chat widget, chat overlay, Custom Widget (a different Streamlabs widget
 The Streamlabs default Chat Box template structure that custom HTML/CSS/JS extends. Defines the DOM class names (`.meta`, `.name`, `.message`, `.badges`), the `#chatlist_item` and `#badge_item` snippets, and the `{type}-icon` badge class convention. Custom CSS targets these classes; custom HTML replaces the snippets.
 _Avoid_: default template, stock widget
 
+**Profile**:
+A self-contained widget variant: a directory under `profiles/<name>/` holding its own `index.html`, `style.css`, and `widget.config.json`. The **active profile** (tracked in `profiles/.active`) is the one served by the dev server and built by `build-all.ts`. Profiles share the same TypeScript runtime (`src/main.ts`, `src/renderer.ts`, `src/badges.ts`, `src/mock-feed.ts`); only HTML, CSS, and field token defaults vary.
+_Avoid_: theme, variant, preset
+
 **Template Token**:
 A `{placeholder}` string in HTML or CSS that Streamlabs replaces at runtime. Message tokens (`{from}`, `{color}`, `{message}`, `{messageId}`) are replaced per-message by the built-in template engine. Field tokens (`{background_color}`, `{font_size}`, `{text_color}`, `{message_hide_delay}`) are replaced with the streamer's configured values.
 _Avoid_: placeholder, variable, slot
