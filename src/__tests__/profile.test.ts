@@ -222,3 +222,43 @@ describe("neon profile", () => {
     }
   }, 60000);
 });
+
+describe("hot-reload config switching", () => {
+  // Save and restore .active — beforeEach already sets it to baseline
+  let savedProfile = "";
+
+  beforeEach(() => {
+    savedProfile = readFileSync(activePath, "utf-8").trim();
+    writeFileSync(activePath, "baseline");
+  });
+
+  afterEach(() => {
+    writeFileSync(activePath, savedProfile);
+  });
+
+  it("re-reads widget.config.json when .active changes without restart", () => {
+    // Read baseline config
+    const baselineRaw = readFileSync(
+      resolve(profilesDir, "baseline", "widget.config.json"),
+      "utf-8",
+    );
+    const baselineConfig = JSON.parse(baselineRaw) as Record<string, string>;
+    expect(baselineConfig.background_color).toBe("#1a1a2e");
+    expect(baselineConfig.font_size).toBe("16px");
+
+    // Switch to neon
+    writeFileSync(activePath, "neon");
+
+    // Read neon config — should be different without any restart
+    const newActive = readFileSync(activePath, "utf-8").trim();
+    const neonRaw = readFileSync(resolve(profilesDir, newActive, "widget.config.json"), "utf-8");
+    const neonConfig = JSON.parse(neonRaw) as Record<string, string>;
+    expect(neonConfig.background_color).toBe("#0a0a0a");
+    expect(neonConfig.text_color).toBe("#39ff14");
+    expect(neonConfig.message_hide_delay).toBe("15s");
+
+    // Values must differ from baseline to prove switching worked
+    expect(neonConfig.background_color).not.toBe(baselineConfig.background_color);
+    expect(neonConfig.text_color).not.toBe(baselineConfig.text_color);
+  });
+});
