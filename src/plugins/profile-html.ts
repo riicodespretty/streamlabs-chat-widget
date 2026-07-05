@@ -1,4 +1,4 @@
-import type { Plugin, ViteDevServer } from "vite";
+import type { Plugin } from "vite";
 import { resolve } from "node:path";
 import { getProfileName } from "../shared/profiles";
 
@@ -20,7 +20,13 @@ export function profileHtmlPlugin(): Plugin {
       server.watcher.add(resolve(projectRoot, "profiles", ".active"));
       server.watcher.on("change", (path) => {
         if (path.endsWith("profiles/.active")) {
-          reloadWithNewProfile(server);
+          // Invalidate main.ts and all CSS modules so they re-resolve
+          const mainMod = server.moduleGraph.getModuleById(resolve(projectRoot, "src", "main.ts"));
+          if (mainMod) server.moduleGraph.invalidateModule(mainMod);
+          for (const [, m] of server.moduleGraph.idToModuleMap) {
+            if (m.id?.endsWith(".css")) server.moduleGraph.invalidateModule(m);
+          }
+          server.hot.send({ type: "full-reload" });
         }
       });
 
@@ -42,10 +48,4 @@ export function profileHtmlPlugin(): Plugin {
       ];
     },
   };
-}
-
-function reloadWithNewProfile(server: ViteDevServer): void {
-  const mod = server.moduleGraph.getModuleById(resolve(projectRoot, "src", "main.ts"));
-  if (mod) server.moduleGraph.invalidateModule(mod);
-  server.hot.send({ type: "full-reload" });
 }
