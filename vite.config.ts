@@ -44,14 +44,16 @@ export default defineConfig((_env) => {
     return {
       name: "profile-html",
       configureServer(server) {
-        // Watch profiles/.active for changes and trigger full page reload
+        // Watch profiles/.active for changes — invalidate module cache + full reload
         server.watcher.add(resolve(projectRoot, "profiles", ".active"));
         server.watcher.on("change", (path) => {
           if (path.endsWith("profiles/.active")) {
+            // Invalidate the style.css module so it re-resolves to the new profile
+            const mod = server.moduleGraph.getModuleById(resolve(projectRoot, "src", "main.ts"));
+            if (mod) server.moduleGraph.invalidateModule(mod);
             server.hot.send({ type: "full-reload" });
           }
         });
-
         server.middlewares.use((req, _res, next) => {
           if (req.url === "/" || req.url === "/index.html") {
             req.url = `/profiles/${getProfileName()}/index.html`;

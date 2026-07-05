@@ -38,8 +38,20 @@ export function replaceTokens(code: string, config: FieldSettings): string {
   return result;
 }
 
+/** Read the active profile's widget.config.json. Returns null on failure. */
+function readActiveConfig(root: string): FieldSettings | null {
+  try {
+    const activeProfile =
+      process.env.PROFILE || readFileSync(resolve(root, "profiles", ".active"), "utf-8").trim();
+    const configPath = resolve(root, "profiles", activeProfile, "widget.config.json");
+    return JSON.parse(readFileSync(configPath, "utf-8")) as FieldSettings;
+  } catch {
+    return null;
+  }
+}
+
 export function streamlabsTokens(): Plugin {
-  let config: FieldSettings | null = null;
+  let root = "";
   let isDev = false;
   let isBuild = false;
 
@@ -48,26 +60,15 @@ export function streamlabsTokens(): Plugin {
     enforce: "pre",
 
     configResolved(resolvedConfig) {
+      root = resolvedConfig.root;
       isDev = resolvedConfig.command === "serve";
       isBuild = resolvedConfig.command === "build";
-      try {
-        const activeProfile =
-          process.env.PROFILE ||
-          readFileSync(resolve(resolvedConfig.root, "profiles", ".active"), "utf-8").trim();
-        const configPath = resolve(
-          resolvedConfig.root,
-          "profiles",
-          activeProfile,
-          "widget.config.json",
-        );
-        const raw = readFileSync(configPath, "utf-8");
-        config = JSON.parse(raw) as FieldSettings;
-      } catch {
-        config = null;
-      }
     },
 
     transform(code, id) {
+      // Re-read config on each transform so profile switches take effect without restart
+      const config = readActiveConfig(root);
+
       // Dev mode: replace tokens with defaults so the widget renders correctly
       if (isDev && config && (id.endsWith(".html") || id.endsWith(".css"))) {
         return { code: replaceTokens(code, config), map: null };
