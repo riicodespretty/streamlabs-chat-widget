@@ -44,6 +44,14 @@ export default defineConfig((_env) => {
     return {
       name: "profile-html",
       configureServer(server) {
+        // Watch profiles/.active for changes and trigger full page reload
+        server.watcher.add(resolve(projectRoot, "profiles", ".active"));
+        server.watcher.on("change", (path) => {
+          if (path.endsWith("profiles/.active")) {
+            server.hot.send({ type: "full-reload" });
+          }
+        });
+
         server.middlewares.use((req, _res, next) => {
           if (req.url === "/" || req.url === "/index.html") {
             req.url = `/profiles/${getProfileName()}/index.html`;
