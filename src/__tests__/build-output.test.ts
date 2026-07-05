@@ -66,17 +66,8 @@ describe("multi-profile build", () => {
     // Clean dist
     if (existsSync(distDir)) rmSync(distDir, { recursive: true });
 
-    // Build each profile with PROFILE env var set
-    const entries = readdirSync(profilesDir, { withFileTypes: true });
-    for (const entry of entries) {
-      if (!entry.isDirectory()) continue;
-      process.env.PROFILE = entry.name;
-      try {
-        await build({ root });
-      } finally {
-        delete process.env.PROFILE;
-      }
-    }
+    // build() triggers multiProfileBuildPlugin which builds all profiles
+    await build({ root });
   }, 60000);
 
   it("produces per-profile output dirs with widget.html, widget.css, widget.js", () => {
