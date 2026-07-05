@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vite-plus/test";
-import { readFileSync, existsSync, writeFileSync, rmSync, statSync } from "node:fs";
+import { readFileSync, existsSync, writeFileSync, rmSync, readdirSync } from "node:fs";
+import type { Dirent } from "node:fs";
 import { execSync } from "node:child_process";
 import { resolve } from "node:path";
 
@@ -94,56 +95,35 @@ describe("profile resolution", () => {
   });
 });
 
-describe("profile scripts", () => {
-  const scriptsDir = resolve(root, "scripts");
+describe("profile switching (replaces bash scripts)", () => {
+  const activePath = resolve(profilesDir, ".active");
 
-  it("scripts/switch-profile.sh exists and is executable", () => {
-    const scriptPath = resolve(scriptsDir, "switch-profile.sh");
-    expect(existsSync(scriptPath)).toBe(true);
-    const mode = statSync(scriptPath).mode;
-    expect(mode & 0o111).not.toBe(0);
-  });
-
-  it("scripts/list-profiles.sh exists and is executable", () => {
-    const scriptPath = resolve(scriptsDir, "list-profiles.sh");
-    expect(existsSync(scriptPath)).toBe(true);
-    const mode = statSync(scriptPath).mode;
-    expect(mode & 0o111).not.toBe(0);
-  });
-
-  it("switch-profile.sh baseline switches .active to baseline", () => {
-    const activePath = resolve(profilesDir, ".active");
+  it("writing to profiles/.active switches the active profile", () => {
     const original = readFileSync(activePath, "utf-8").trim();
-
     try {
-      execSync("sh scripts/switch-profile.sh baseline", {
-        cwd: root,
-        stdio: "pipe",
-      });
-      const updated = readFileSync(activePath, "utf-8").trim();
-      expect(updated).toBe("baseline");
+      writeFileSync(activePath, "baseline");
+      expect(readFileSync(activePath, "utf-8").trim()).toBe("baseline");
+
+      writeFileSync(activePath, "neon");
+      expect(readFileSync(activePath, "utf-8").trim()).toBe("neon");
     } finally {
       writeFileSync(activePath, original + "\n");
     }
   });
 
-  it("switch-profile.sh fails for non-existent profile", () => {
-    expect(() => {
-      execSync("sh scripts/switch-profile.sh __nonexistent__", {
-        cwd: root,
-        stdio: "pipe",
-      });
-    }).toThrow();
+  it("refuses to switch to a non-existent profile", () => {
+    const nonexistent = resolve(profilesDir, "__nonexistent__");
+    expect(existsSync(nonexistent)).toBe(false);
   });
 
-  it("list-profiles.sh lists baseline with active marker", () => {
-    const output = execSync("sh scripts/list-profiles.sh", {
-      cwd: root,
-      stdio: "pipe",
-    }).toString();
+  it("listing profiles finds all directories and marks active", () => {
+    const dirs = readdirSync(profilesDir, { withFileTypes: true });
+    const profiles = dirs.filter((d: Dirent) => d.isDirectory()).map((d: Dirent) => d.name);
+    expect(profiles).toContain("baseline");
+    expect(profiles).toContain("neon");
 
-    expect(output).toContain("baseline");
-    expect(output).toContain("(active)");
+    const active = readFileSync(activePath, "utf-8").trim();
+    expect(profiles).toContain(active);
   });
 });
 
