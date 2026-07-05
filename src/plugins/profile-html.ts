@@ -5,7 +5,7 @@ import { getProfileName } from "../shared/profiles";
 const projectRoot = (import.meta as unknown as { dirname: string }).dirname;
 
 /**
- * Dev-only plugin: middleware for HTML routing, watcher for HMR reload,
+ * Dev-only plugin: middleware for HTML routing, profile-switch HMR full-reload,
  * and profile-switcher UI injection.
  */
 export function profileHtmlPlugin(): Plugin {
@@ -20,12 +20,6 @@ export function profileHtmlPlugin(): Plugin {
       server.watcher.add(resolve(projectRoot, "profiles", ".active"));
       server.watcher.on("change", (path) => {
         if (path.endsWith("profiles/.active")) {
-          // Invalidate main.ts and all CSS modules so they re-resolve
-          const mainMod = server.moduleGraph.getModuleById(resolve(projectRoot, "src", "main.ts"));
-          if (mainMod) server.moduleGraph.invalidateModule(mainMod);
-          for (const [, m] of server.moduleGraph.idToModuleMap) {
-            if (m.id?.endsWith(".css")) server.moduleGraph.invalidateModule(m);
-          }
           server.hot.send({ type: "full-reload" });
         }
       });

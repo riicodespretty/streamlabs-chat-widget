@@ -13,11 +13,5 @@ export function profileCssResolver(): Plugin {
       }
       return null;
     },
-    handleHotUpdate({ file, server }) {
-      // When .active changes, send full-reload to re-resolve all imports
-      if (file.endsWith("profiles/.active")) {
-        server.hot.send({ type: "full-reload" });
-      }
-    },
   };
 }
