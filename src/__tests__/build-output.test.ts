@@ -12,14 +12,16 @@ beforeAll(async () => {
 }, 30000);
 
 describe("build output", () => {
-  it("produces widget.html, widget.css, widget.js in dist/", () => {
-    expect(existsSync(resolve(distDir, "widget.html"))).toBe(true);
-    expect(existsSync(resolve(distDir, "widget.css"))).toBe(true);
-    expect(existsSync(resolve(distDir, "widget.js"))).toBe(true);
+  const baselineDist = resolve(distDir, "baseline");
+
+  it("produces widget.html, widget.css, widget.js in dist/baseline/", () => {
+    expect(existsSync(resolve(baselineDist, "widget.html"))).toBe(true);
+    expect(existsSync(resolve(baselineDist, "widget.css"))).toBe(true);
+    expect(existsSync(resolve(baselineDist, "widget.js"))).toBe(true);
   });
 
   it("widget.html contains #log, #chatlist_item template with {from}, {color}, {message}, {messageId}, and #badge_item template", () => {
-    const html = readFileSync(resolve(distDir, "widget.html"), "utf-8");
+    const html = readFileSync(resolve(baselineDist, "widget.html"), "utf-8");
     expect(html).toContain('id="log"');
     expect(html).toContain('id="chatlist_item"');
     expect(html).toContain("{from}");
@@ -30,14 +32,14 @@ describe("build output", () => {
   });
 
   it('widget.html does not contain <html>, <head>, or <script type="module" tags', () => {
-    const html = readFileSync(resolve(distDir, "widget.html"), "utf-8");
+    const html = readFileSync(resolve(baselineDist, "widget.html"), "utf-8");
     expect(html).not.toContain("<html");
     expect(html).not.toContain("<head");
     expect(html).not.toContain('<script type="module"');
   });
 
   it("widget.css contains {background_color}, {font_size}, {text_color}, {message_hide_delay} tokens not replaced with defaults", () => {
-    const css = readFileSync(resolve(distDir, "widget.css"), "utf-8");
+    const css = readFileSync(resolve(baselineDist, "widget.css"), "utf-8");
     expect(css).toContain("{background_color}");
     expect(css).toContain("{font_size}");
     expect(css).toContain("{text_color}");
@@ -48,7 +50,7 @@ describe("build output", () => {
   });
 
   it("widget.js does not contain mock feed user names or mock-feed import", () => {
-    const js = readFileSync(resolve(distDir, "widget.js"), "utf-8");
+    const js = readFileSync(resolve(baselineDist, "widget.js"), "utf-8");
     expect(js).not.toContain("nightbot");
     expect(js).not.toContain("Nightbot");
     expect(js).not.toContain("chatterbox42");

@@ -185,13 +185,14 @@ describe("neon profile", () => {
       // Run build in a subprocess so vite reads .active fresh
       execSync("bun x vp build", { cwd: root, stdio: "pipe", timeout: 30000 });
 
-      // Verify build output exists
-      expect(existsSync(resolve(distDir, "widget.html"))).toBe(true);
-      expect(existsSync(resolve(distDir, "widget.js"))).toBe(true);
-      expect(existsSync(resolve(distDir, "widget.css"))).toBe(true);
+      // Verify build output exists in per-profile dir
+      const neonDist = resolve(distDir, "neon");
+      expect(existsSync(resolve(neonDist, "widget.html"))).toBe(true);
+      expect(existsSync(resolve(neonDist, "widget.js"))).toBe(true);
+      expect(existsSync(resolve(neonDist, "widget.css"))).toBe(true);
 
       // Verify the built widget.css has neon-specific styling
-      const builtCss = readFileSync(resolve(distDir, "widget.css"), "utf-8");
+      const builtCss = readFileSync(resolve(neonDist, "widget.css"), "utf-8");
       expect(builtCss).toContain("Courier New");
       expect(builtCss).toContain("text-shadow");
     } finally {
