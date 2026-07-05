@@ -61,14 +61,5 @@ export function profileSwitcherPlugin(): Plugin {
         next();
       });
     },
-    transformIndexHtml() {
-      return [
-        {
-          tag: "script",
-          attrs: { src: "/src/profile-switcher.ts", type: "module" },
-          injectTo: "body",
-        },
-      ];
-    },
   };
 }

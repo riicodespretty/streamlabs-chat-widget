@@ -14,7 +14,7 @@ export function profileValidatePlugin(): Plugin {
 
     buildStart() {
       const profileDir = getProfileDir();
-      const requiredFiles = ["index.html", "widget.config.json"];
+      const requiredFiles = ["index.html", "style.css", "widget.config.json"];
       const missing: string[] = [];
 
       for (const file of requiredFiles) {

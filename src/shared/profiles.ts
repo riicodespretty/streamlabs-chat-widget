@@ -14,7 +14,11 @@ export function getProjectRoot(): string {
 }
 
 export function getProfileName(): string {
-  if (process.env.PROFILE) return process.env.PROFILE;
+  if (process.env.PROFILE) {
+    const p = process.env.PROFILE;
+    if (p.includes("/") || p.includes("\\") || p === "..") return "baseline";
+    return p;
+  }
   const activePath = resolve(_projectRoot, "profiles", ".active");
   if (!existsSync(activePath)) return "baseline";
   return readFileSync(activePath, "utf-8").trim();
@@ -31,15 +35,4 @@ export function listProfiles(): string[] {
   return readdirSync(profilesDir, { withFileTypes: true })
     .filter((d: Dirent) => d.isDirectory())
     .map((d: Dirent) => d.name);
-}
-
-/** Shared mutable profile override (used by build-all.ts for per-profile builds). */
-let _profileOverride: string | null = null;
-
-export function setProfileOverride(name: string | null): void {
-  _profileOverride = name;
-}
-
-export function getProfileOverride(): string | null {
-  return _profileOverride;
 }

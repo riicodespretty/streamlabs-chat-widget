@@ -13,7 +13,7 @@ The Streamlabs default Chat Box template structure that custom HTML/CSS/JS exten
 _Avoid_: default template, stock widget
 
 **Profile**:
-A self-contained widget variant: a directory under `profiles/<name>/` holding its own `index.html`, `style.css`, and `widget.config.json`. The **active profile** (tracked in `profiles/.active`) is the one served by the dev server and built by `build-all.ts`. Profiles share the same TypeScript runtime (`src/main.ts`, `src/renderer.ts`, `src/badges.ts`, `src/mock-feed.ts`); only HTML, CSS, and field token defaults vary.
+A self-contained widget variant: a directory under `profiles/<name>/` holding its own `index.html`, `style.css`, and `widget.config.json`. The **active profile** (tracked in `profiles/.active`) is the one served by the dev server and built by `vp build`. Profiles share the same TypeScript runtime (`src/main.ts`, `src/renderer.ts`, `src/badges.ts`, `src/mock-feed.ts`); only HTML, CSS, and field token defaults vary.
 _Avoid_: theme, variant, preset
 
 **Template Token**:

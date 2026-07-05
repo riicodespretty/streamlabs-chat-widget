@@ -5,11 +5,17 @@ import { getProfileName } from "../shared/profiles";
 const projectRoot = (import.meta as unknown as { dirname: string }).dirname;
 
 /**
- * Dev-only plugin: middleware for HTML routing + watcher for HMR reload.
+ * Dev-only plugin: middleware for HTML routing, watcher for HMR reload,
+ * and profile-switcher UI injection.
  */
 export function profileHtmlPlugin(): Plugin {
+  let isDev = false;
+
   return {
     name: "profile-html",
+    configResolved(resolvedConfig) {
+      isDev = resolvedConfig.command === "serve";
+    },
     configureServer(server) {
       server.watcher.add(resolve(projectRoot, "profiles", ".active"));
       server.watcher.on("change", (path) => {
@@ -24,6 +30,16 @@ export function profileHtmlPlugin(): Plugin {
         }
         next();
       });
+    },
+    transformIndexHtml() {
+      if (!isDev) return [];
+      return [
+        {
+          tag: "script",
+          attrs: { src: "/src/profile-switcher.ts", type: "module" },
+          injectTo: "body",
+        },
+      ];
     },
   };
 }
