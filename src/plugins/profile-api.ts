@@ -1,9 +1,7 @@
 import type { Plugin } from "vite";
 import { writeFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
-import { getProfileName, listProfiles } from "../shared/profiles";
-
-const projectRoot = (import.meta as unknown as { dirname: string }).dirname;
+import { getProfileName, getProjectRoot, listProfiles } from "../shared/profiles";
 
 /** Parse a raw HTTP request body. */
 function readBody(req: {
@@ -18,7 +16,7 @@ function readBody(req: {
 }
 
 /**
- * Dev-only plugin: profile list/switch API + injected UI panel.
+ * Dev-only plugin: profile list/switch API.
  * Replaces scripts/switch-profile.sh and scripts/list-profiles.sh.
  */
 export function profileSwitcherPlugin(): Plugin {
@@ -26,7 +24,6 @@ export function profileSwitcherPlugin(): Plugin {
     name: "profile-switcher",
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
-        // GET /__profiles — list profiles with active marker
         if (req.url === "/__profiles") {
           const activeName = getProfileName();
           const profiles = listProfiles().map((name) => ({
@@ -38,18 +35,17 @@ export function profileSwitcherPlugin(): Plugin {
           return;
         }
 
-        // POST /__profile — switch active profile
         if (req.url === "/__profile" && req.method === "POST") {
           try {
             const body = await readBody(req);
             const { profile } = JSON.parse(body) as { profile: string };
-            const profileDir = resolve(projectRoot, "profiles", profile);
+            const profileDir = resolve(getProjectRoot(), "profiles", profile);
             if (!existsSync(profileDir)) {
               res.statusCode = 404;
               res.end(JSON.stringify({ error: `Profile '${profile}' not found` }));
               return;
             }
-            writeFileSync(resolve(projectRoot, "profiles", ".active"), `${profile}\n`);
+            writeFileSync(resolve(getProjectRoot(), "profiles", ".active"), `${profile}\n`);
             res.end(JSON.stringify({ switched: profile }));
           } catch {
             res.statusCode = 400;
