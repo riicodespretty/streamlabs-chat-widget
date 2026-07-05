@@ -5,8 +5,8 @@ import { getProfileName } from "../shared/profiles";
 const projectRoot = (import.meta as unknown as { dirname: string }).dirname;
 
 /**
- * Dev-only plugin: middleware for HTML routing, profile-switch HMR full-reload,
- * and profile-switcher UI injection.
+ * Dev-only plugin: middleware for HTML routing, module invalidation
+ * on profile switch, and profile-switcher UI injection.
  */
 export function profileHtmlPlugin(): Plugin {
   let isDev = false;
@@ -20,8 +20,9 @@ export function profileHtmlPlugin(): Plugin {
       server.watcher.add(resolve(projectRoot, "profiles", ".active"));
       server.watcher.on("change", (path) => {
         if (path.endsWith("profiles/.active")) {
+          // No full-reload — profile-switcher.ts hot-swaps CSS client-side.
+          // Invalidate module graph so fresh requests resolve to new profile.
           server.moduleGraph.invalidateAll();
-          server.hot.send({ type: "full-reload" });
         }
       });
 
