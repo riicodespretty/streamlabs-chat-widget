@@ -1,9 +1,11 @@
 import { defineConfig } from "vite-plus";
-import { readFileSync } from "node:fs";
+import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 
 const root = resolve(import.meta.dirname!);
-const activeProfile = readFileSync(resolve(root, "profiles", ".active"), "utf-8").trim();
+const activeProfile = existsSync(resolve(root, "profiles", ".active"))
+  ? readFileSync(resolve(root, "profiles", ".active"), "utf-8").trim()
+  : "baseline";
 const profileDir = resolve(root, "profiles", activeProfile);
 const styleCssPath = resolve(profileDir, "style.css");
 
