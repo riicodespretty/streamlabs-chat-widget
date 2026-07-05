@@ -1,0 +1,5 @@
+{
+  "setup": ["vp install"],
+  "teardown": [],
+  "run": ["vp dev"]
+}

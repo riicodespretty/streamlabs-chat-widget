@@ -30,6 +30,24 @@ export default defineConfig((_env) => {
   }
 
   /**
+   * During dev, serve the active profile's index.html when the root path is requested.
+   * Vite's build pipeline already resolves it via rollupOptions.input.
+   */
+  function profileHtmlPlugin(): Plugin {
+    return {
+      name: "profile-html",
+      configureServer(server) {
+        server.middlewares.use((req, _res, next) => {
+          if (req.url === "/" || req.url === "/index.html") {
+            req.url = `/profiles/${profileName}/index.html`;
+          }
+          next();
+        });
+      },
+    };
+  }
+
+  /**
    * Build-only plugin that:
    * 1. Strips mock feed import from main.ts so it's excluded from the production bundle
    * 2. Strips index.html to body-only content and renames it to widget.html
@@ -123,6 +141,7 @@ export default defineConfig((_env) => {
       profileValidatePlugin(),
       profileCssResolver(),
       buildWidgetPlugin(),
+      profileHtmlPlugin(),
       streamlabsTokens() as Plugin,
     ],
     build: {
