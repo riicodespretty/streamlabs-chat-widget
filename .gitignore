@@ -1,3 +1,7 @@
+dst:
+.superset
+profiles/.active
+
 # Logs
 logs
 *.log
