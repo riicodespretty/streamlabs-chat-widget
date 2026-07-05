@@ -30,13 +30,22 @@ function multiProfileBuildPlugin(): Plugin {
       }
       delete process.env.PROFILE;
 
-      // Clean up the initial build output (redundant after per-profile builds)
-      for (const f of ["widget.html", "widget.css", "widget.js"]) {
+      // Clean initial output (widget.css/js written before per-profile builds)
+      for (const f of ["widget.css", "widget.js"]) {
         try {
           unlinkSync(resolve(root, "dist", f));
         } catch {
           /* ok */
         }
+      }
+    },
+    closeBundle() {
+      if (!isBuild || process.env.PROFILE) return;
+      // widget.html is written by buildWidgetPlugin.closeBundle after writeBundle
+      try {
+        unlinkSync(resolve(process.cwd(), "dist", "widget.html"));
+      } catch {
+        /* ok */
       }
     },
   };
