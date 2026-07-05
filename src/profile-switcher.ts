@@ -17,7 +17,11 @@ async function refreshUI(): Promise<void> {
 
 /** Hot-swap profile CSS and HTML template. Messages in #log survive. */
 async function hotSwapProfile(profile: string): Promise<void> {
-  // 1. Swap CSS — use raw CSS endpoint with token replacement applied
+  // Disable transitions during swap to prevent visual flash
+  const prevTransition = document.body.style.transition;
+  document.body.style.transition = "none";
+
+  // Swap CSS
   const cssR = await fetch(`/__profile-css/${profile}`);
   const cssText = await cssR.text();
   let style = document.querySelector("style[data-profile-css]") as HTMLStyleElement | null;
@@ -28,9 +32,11 @@ async function hotSwapProfile(profile: string): Promise<void> {
   }
   style.textContent = cssText;
 
-  // Remove the old Vite-injected style so it doesn't conflict
+  // Remove old Vite-injected style
   const viteStyle = document.querySelector("style[data-vite-dev-id]");
   if (viteStyle) viteStyle.remove();
+
+  // Swap HTML template — only affects future messages
   const htmlR = await fetch(`/profiles/${profile}/index.html`);
   const htmlText = await htmlR.text();
   const parser = new DOMParser();
@@ -40,6 +46,9 @@ async function hotSwapProfile(profile: string): Promise<void> {
     const existing = document.querySelector("#chatlist_item");
     if (existing) existing.innerHTML = newTemplate.innerHTML;
   }
+
+  // Restore transitions
+  document.body.style.transition = prevTransition;
 }
 
 void (async () => {
