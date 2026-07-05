@@ -20,18 +20,12 @@ export default defineConfig((_env) => {
       {
         name: "init-project-root",
         config() {
-          const override = getProfileOverride();
-          if (override) {
+          setProjectRoot(process.cwd());
+          const profile = getProfileOverride();
+          if (profile) {
             setProfileOverride(null);
-            return {
-              build: {
-                outDir: resolve(process.cwd(), "dist", override),
-              },
-            };
+            return { build: { outDir: resolve(process.cwd(), "dist", profile) } };
           }
-        },
-        configResolved(resolvedConfig) {
-          setProjectRoot(resolvedConfig.root);
         },
       },
       profileValidatePlugin(),
@@ -44,21 +38,15 @@ export default defineConfig((_env) => {
     build: {
       emptyOutDir: true,
       rollupOptions: {
-        input: {
-          index: resolve(getProfileDir(), "index.html"),
-        },
+        input: { index: resolve(getProfileDir(), "index.html") },
         output: {
           entryFileNames: "widget.js",
           assetFileNames: "assets/[name].[ext]",
         },
       },
     },
-    staged: {
-      "*": "vp check --fix",
-    },
-    fmt: {
-      ignorePatterns: ["profiles/*/style.css"],
-    },
+    staged: { "*": "vp check --fix" },
+    fmt: { ignorePatterns: ["profiles/*/style.css"] },
     lint: {
       jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
       rules: { "vite-plus/prefer-vite-plus-imports": "error" },
