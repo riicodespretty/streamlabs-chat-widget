@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vite-plus/test";
+import { describe, it, expect, beforeEach, afterEach } from "vite-plus/test";
 import { readFileSync, existsSync, writeFileSync, rmSync, statSync } from "node:fs";
 import { execSync } from "node:child_process";
 import { resolve } from "node:path";
@@ -6,6 +6,17 @@ import { resolve } from "node:path";
 const root = resolve(import.meta.dirname, "../..");
 const profilesDir = resolve(root, "profiles");
 
+let previousProfile = "";
+const activePath = resolve(profilesDir, ".active");
+
+beforeEach(() => {
+  previousProfile = readFileSync(activePath, "utf-8").trim();
+  writeFileSync(activePath, "baseline");
+});
+
+afterEach(() => {
+  writeFileSync(activePath, previousProfile);
+});
 describe("profile resolution", () => {
   it("profiles/.active exists and contains a valid non-empty profile name", () => {
     const activePath = resolve(profilesDir, ".active");

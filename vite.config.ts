@@ -7,12 +7,19 @@ import { resolve } from "node:path";
 const projectRoot = import.meta.dirname!;
 
 export default defineConfig((_env) => {
-  const profileName =
-    process.env.PROFILE ||
-    readFileSync(resolve(projectRoot, "profiles", ".active"), "utf-8").trim();
-  const profileDir = resolve(projectRoot, "profiles", profileName);
+  /** Read the active profile name from profiles/.active on each call. */
+  function getProfileName(): string {
+    return (
+      process.env.PROFILE ||
+      readFileSync(resolve(projectRoot, "profiles", ".active"), "utf-8").trim()
+    );
+  }
+
+  function getProfileDir(): string {
+    return resolve(projectRoot, "profiles", getProfileName());
+  }
   const outDir = process.env.PROFILE
-    ? resolve(projectRoot, "dist", profileName)
+    ? resolve(projectRoot, "dist", getProfileName())
     : resolve(projectRoot, "dist");
 
   /** Resolve `./style.css` from main.ts to the active profile's style.css. */
@@ -22,7 +29,7 @@ export default defineConfig((_env) => {
       enforce: "pre",
       resolveId(source, importer) {
         if (source === "./style.css" && importer) {
-          return resolve(profileDir, "style.css");
+          return resolve(getProfileDir(), "style.css");
         }
         return null;
       },
@@ -39,7 +46,7 @@ export default defineConfig((_env) => {
       configureServer(server) {
         server.middlewares.use((req, _res, next) => {
           if (req.url === "/" || req.url === "/index.html") {
-            req.url = `/profiles/${profileName}/index.html`;
+            req.url = `/profiles/${getProfileName()}/index.html`;
           }
           next();
         });
@@ -77,7 +84,7 @@ export default defineConfig((_env) => {
 
       closeBundle() {
         // Vite preserves directory structure: profiles/<profile>/index.html
-        const indexPath = resolve(outDir, "profiles", profileName, "index.html");
+        const indexPath = resolve(outDir, "profiles", getProfileName(), "index.html");
         if (!existsSync(indexPath)) return;
 
         let html = readFileSync(indexPath, "utf-8");
@@ -120,16 +127,16 @@ export default defineConfig((_env) => {
         const missing: string[] = [];
 
         for (const file of requiredFiles) {
-          if (!existsSync(resolve(profileDir, file))) {
+          if (!existsSync(resolve(getProfileDir(), file))) {
             missing.push(file);
           }
         }
 
         if (missing.length > 0) {
           const msg =
-            `Profile "${profileName}" is missing required files:\n` +
+            `Profile "${getProfileName()}" is missing required files:\n` +
             missing.map((f) => `  - ${f}`).join("\n") +
-            `\n\nExpected at: ${profileDir}/`;
+            `\n\nExpected at: ${getProfileDir()}/`;
           this.error(msg);
         }
       },
@@ -148,7 +155,7 @@ export default defineConfig((_env) => {
       outDir,
       emptyOutDir: true,
       rollupOptions: {
-        input: { index: resolve(profileDir, "index.html") },
+        input: { index: resolve(getProfileDir(), "index.html") },
         output: {
           entryFileNames: "widget.js",
           assetFileNames: "assets/[name].[ext]",
