@@ -1,7 +1,7 @@
 import type { Plugin } from "vite";
 import { readFileSync, writeFileSync, unlinkSync, existsSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
-import { getProfileName, getProjectRoot } from "../shared/profiles";
+import { getProfileName } from "../shared/profiles";
 
 /**
  * Build-only plugin that:
@@ -10,6 +10,7 @@ import { getProfileName, getProjectRoot } from "../shared/profiles";
  */
 export function buildWidgetPlugin(): Plugin {
   let isBuild = false;
+  let outDir = "";
 
   return {
     name: "build-widget",
@@ -17,6 +18,7 @@ export function buildWidgetPlugin(): Plugin {
 
     configResolved(resolvedConfig) {
       isBuild = resolvedConfig.command === "build";
+      outDir = resolvedConfig.build.outDir;
     },
 
     transform(code, id) {
@@ -32,8 +34,7 @@ export function buildWidgetPlugin(): Plugin {
     },
 
     closeBundle() {
-      const dist = resolve(getProjectRoot(), "dist");
-      const indexPath = resolve(dist, "profiles", getProfileName(), "index.html");
+      const indexPath = resolve(outDir, "profiles", getProfileName(), "index.html");
       if (!existsSync(indexPath)) return;
 
       const html = readFileSync(indexPath, "utf-8");
@@ -44,10 +45,10 @@ export function buildWidgetPlugin(): Plugin {
             .trim()
         : html;
 
-      writeFileSync(resolve(dist, "widget.html"), bodyHTML);
+      writeFileSync(resolve(outDir, "widget.html"), bodyHTML);
 
       try {
-        const profilesOutputDir = resolve(dist, "profiles");
+        const profilesOutputDir = resolve(outDir, "profiles");
         if (existsSync(profilesOutputDir)) {
           unlinkSync(indexPath);
           rmSync(profilesOutputDir, { recursive: true });

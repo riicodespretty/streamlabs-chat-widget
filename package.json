@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vp dev",
-    "build": "tsc && bun scripts/build-all.ts",
+    "build": "tsc && vp build",
     "preview": "vp preview",
     "prepare": "vp config",
     "test": "vp test run"

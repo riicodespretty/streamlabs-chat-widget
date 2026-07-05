@@ -13,8 +13,8 @@ export function getProjectRoot(): string {
   return _projectRoot;
 }
 
-/** Read the active profile name from profiles/.active on each call. */
 export function getProfileName(): string {
+  if (process.env.PROFILE) return process.env.PROFILE;
   const activePath = resolve(_projectRoot, "profiles", ".active");
   if (!existsSync(activePath)) return "baseline";
   return readFileSync(activePath, "utf-8").trim();
