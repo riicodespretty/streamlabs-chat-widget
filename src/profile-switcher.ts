@@ -28,7 +28,9 @@ async function hotSwapProfile(profile: string): Promise<void> {
   }
   style.textContent = cssText;
 
-  // 2. Swap HTML template — only affects future messages
+  // Remove the old Vite-injected style so it doesn't conflict
+  const viteStyle = document.querySelector("style[data-vite-dev-id]");
+  if (viteStyle) viteStyle.remove();
   const htmlR = await fetch(`/profiles/${profile}/index.html`);
   const htmlText = await htmlR.text();
   const parser = new DOMParser();

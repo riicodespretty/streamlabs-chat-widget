@@ -101,6 +101,18 @@ describe("profile switching integration", () => {
     expect(js).toContain("/profiles/neon/style.css");
   });
 
+  it("/__profile-css/<name> serves raw CSS with token replacement", async () => {
+    const neonCss = await httpGet("/__profile-css/neon");
+    expect(neonCss).toContain("Courier New");
+    expect(neonCss).toContain("#0a0a0a");
+    expect(neonCss).toContain("#39ff14");
+    expect(neonCss).not.toContain("{background_color}");
+
+    const baselineCss = await httpGet("/__profile-css/baseline");
+    expect(baselineCss).toContain("Mali");
+    expect(baselineCss).toContain("#1a1a2e");
+    expect(baselineCss).not.toContain("#0a0a0a");
+  });
   it("HTML routing serves active profile index.html via HTTP middleware", async () => {
     writeFileSync(activePath, "neon");
 
